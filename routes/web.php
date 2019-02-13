@@ -10,10 +10,32 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+use Illuminate\Http\Request;
 
 Route::get('/', function () {
-    return view('welcome');
+    $links = \App\Link::all();
+
+    return view('welcome', ['links' => $links]);
 });
+Route::get('/submit', function () {
+    return view('submit');
+});
+Route::post('/submit', function (Request $request) {
+    $data = $request->validate([
+        'title' => 'required|max:255',
+        'url' => 'required|url|max:255',
+        'description' => 'required|max:255',
+    ]);
+    $link = new \App\Link;
+    $link->title = $data['title'];
+    $link->url = $data['url'];
+    $link->description = $data['description'];
+
+    $link->save();
+
+    return $link;
+});
+
 
 Auth::routes();
 
